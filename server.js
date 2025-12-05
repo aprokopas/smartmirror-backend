@@ -11,7 +11,9 @@ app.use(express.json());
 
 // MongoDB connection
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, {
+    dbName: "smartmirror"
+  })
   .then(() => console.log("MongoDB connected!"))
   .catch((err) => console.error("Mongo error:", err));
 
@@ -23,7 +25,7 @@ app.get("/api/test", (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
