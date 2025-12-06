@@ -39,5 +39,17 @@ router.post("/", auth, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+router.post("/update", auth, async (req, res) => {
+  const userId = req.user.id;
+  const { widgets } = req.body;
+
+  await Dashboard.updateOne(
+    { userId },
+    { $set: { widgets } },
+    { upsert: true }
+  );
+
+  res.json({ message: "Dashboard updated" });
+});
 
 export default router;
