@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 import authRoutes from "./routes/auth.js";
+import dashboardRoutes from "./routes/dashboard.js";
+app.use("/api/dashboard", dashboardRoutes);
+
 
 dotenv.config();
 
@@ -31,4 +34,5 @@ const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
+
 
