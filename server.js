@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
+import authRoutes from "./routes/auth.js";
 
 dotenv.config();
 
@@ -11,13 +12,14 @@ app.use(express.json());
 
 // MongoDB connection
 mongoose
-  .connect(process.env.MONGO_URI, {
-    dbName: "smartmirror"
-  })
+  .connect(process.env.MONGO_URI, { dbName: "smartmirror" })
   .then(() => console.log("MongoDB connected!"))
   .catch((err) => console.error("Mongo error:", err));
 
-// Test API
+// Routes
+app.use("/api/auth", authRoutes);
+
+// Test
 app.get("/api/test", (req, res) => {
   res.json({
     status: "OK",
