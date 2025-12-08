@@ -1,27 +1,75 @@
-import mongoose from "mongoose";
+import express from "express";
+import auth from "../middleware/auth.js";
+import Screen from "../models/Screen.js";
+import User from "../models/User.js";
+import crypto from "crypto";
 
-const screenSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-    screenName: {
-      type: String,
-      required: true
-    },
-    screenKey: {
-      type: String,
-      required: true,
-      unique: true
-    },
-    widgets: {
-      type: Array,
-      default: []
+const router = express.Router();
+
+// ------------------------------------
+// GET ALL SCREENS
+// ------------------------------------
+router.get("/list", auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    const screens = await Screen.find({ userId });
+
+    res.json({
+      screens,
+      maxScreens: user.maxScreens
+    });
+  } catch (err) {
+    console.error("SCREEN LIST ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ------------------------------------
+// ADD SCREEN
+// ------------------------------------
+router.post("/add", auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { screenName } = req.body;
+
+    const user = await User.findById(userId);
+    const currentScreens = await Screen.countDocuments({ userId });
+
+    if (currentScreens >= user.maxScreens) {
+      return res.status(403).json({
+        message: `Your plan allows only ${user.maxScreens} screens`
+      });
     }
-  },
-  { timestamps: true }
-);
 
-export default mongoose.model("Screen", screenSchema);
+    const screen = await Screen.create({
+      userId,
+      screenName,
+      screenKey: crypto.randomBytes(16).toString("hex")
+    });
+
+    res.json({ screen });
+  } catch (err) {
+    console.error("ADD SCREEN ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ------------------------------------
+// DELETE SCREEN
+// ------------------------------------
+router.delete("/delete/:id", auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const screenId = req.params.id;
+
+    await Screen.deleteOne({ _id: screenId, userId });
+
+    res.json({ message: "Screen deleted" });
+  } catch (err) {
+    console.error("DELETE SCREEN ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+export default router;
