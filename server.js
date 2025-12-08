@@ -6,12 +6,14 @@ import mongoose from "mongoose";
 import authRoutes from "./routes/auth.js";
 import dashboardRoutes from "./routes/dashboard.js";
 import widgetsRoutes from "./routes/widgets.js";
+import screenRoutes from "./routes/screens.js";
 
 dotenv.config();
 
 const app = express();   // <-- ΠΡΕΠΕΙ ΝΑ ΕΙΝΑΙ ΕΔΩ ΠΑΝΩ
 app.use(cors());
 app.use(express.json());
+app.use("/api/screens", screenRoutes);
 
 // TEST endpoint
 app.get("/api/test", (req, res) => {
@@ -37,3 +39,4 @@ const PORT = process.env.PORT || 10000;
 app.listen(PORT, () =>
   console.log(`Server running on port ${PORT}`)
 );
+
