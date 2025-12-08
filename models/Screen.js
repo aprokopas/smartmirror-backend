@@ -1,13 +1,27 @@
 import mongoose from "mongoose";
 
-const ScreenSchema = new mongoose.Schema({
-  userId: mongoose.Schema.Types.ObjectId,
-  screenName: String,
-  screenKey: {
-    type: String,
-    unique: true
+const screenSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+    screenName: {
+      type: String,
+      required: true
+    },
+    screenKey: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    widgets: {
+      type: Array,
+      default: []
+    }
   },
-  createdAt: { type: Date, default: Date.now }
-});
+  { timestamps: true }
+);
 
-export default mongoose.model("Screen", ScreenSchema);
+export default mongoose.model("Screen", screenSchema);
